@@ -1,52 +1,604 @@
 <!doctype html>
 <html lang="uz">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1459e8">
 <title>YECHIM — Muammodan yechimga</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:#eef4ff;color:#13254b}button,input,textarea,select{font:inherit}button{cursor:pointer}.top{background:linear-gradient(130deg,#0e3da8,#1769f5,#69b6ff);color:white;padding:22px max(16px,calc((100% - 1000px)/2)) 26px}.brand{font-size:22px;font-weight:850}.top h1{font-size:clamp(25px,5vw,38px);margin:24px 0 8px}.top p{margin:0}.search{display:flex;gap:8px;background:white;padding:7px;border-radius:14px;margin-top:18px}.search input{flex:1;min-width:0;border:0;padding:10px;color:#123}.search button,.primary{background:#1459e8;color:white;border:0;border-radius:11px;padding:11px 15px;font-weight:700}.wrap{max-width:1000px;margin:auto;padding:20px 15px 90px}.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card,.panel,.item{background:white;border:1px solid #dfe8fb;border-radius:16px;padding:16px;margin-bottom:12px}.card{text-align:left;color:inherit;min-height:120px}.card b{display:block;margin:8px 0}.muted{font-size:13px;color:#687895}.sectionhead{margin:8px 0 14px}.field{display:grid;gap:7px;margin:13px 0}.field label{font-weight:700;font-size:13px}.field input,.field textarea,.field select{width:100%;border:1px solid #d6e1f5;border-radius:11px;padding:12px;background:#fbfdff;color:#13254b}.field textarea{min-height:100px}.secondary{border:1px solid #d6e1f5;border-radius:11px;padding:11px 14px;background:white;color:#13254b}.result,.notice{background:#eaf2ff;border-radius:11px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5}.hidden{display:none!important}.bottom{position:fixed;bottom:0;left:0;right:0;background:#fffffff0;border-top:1px solid #dce6f7;display:flex;justify-content:center}.nav{display:flex;justify-content:space-around;width:min(100%,720px);padding:7px 3px}.nav button{border:0;background:transparent;color:#687895;font-size:11px;padding:6px}.nav button.active{color:#1459e8;font-weight:800}.back{border:0;background:transparent;color:#1459e8;padding:0 0 12px}.tag{color:#167344;font-size:12px}.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);background:#12234b;color:white;padding:12px;border-radius:12px;display:none;max-width:90%}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:#eef4ff;color:#13254b}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.top{background:linear-gradient(130deg,#0e3da8,#1769f5,#69b6ff);color:white;padding:22px max(16px,calc((100% - 1000px)/2)) 26px}
+.brand{font-size:22px;font-weight:850}
+.top h1{font-size:clamp(25px,5vw,38px);margin:24px 0 8px}
+.top p{margin:0}
+.search{display:flex;gap:8px;background:white;padding:7px;border-radius:14px;margin-top:18px}
+.search input{flex:1;min-width:0;border:0;padding:10px;color:#123}
+.search button,.primary{background:#1459e8;color:white;border:0;border-radius:11px;padding:11px 15px;font-weight:700}
+.wrap{max-width:1000px;margin:auto;padding:20px 15px 90px}
+.view{display:none}
+.view.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card,.panel,.item{background:white;border:1px solid #dfe8fb;border-radius:16px;padding:16px;margin-bottom:12px}
+.card{text-align:left;color:inherit;min-height:120px}
+.card b{display:block;margin:8px 0}
+.muted{font-size:13px;color:#687895}
+.field{display:grid;gap:7px;margin:13px 0}
+.field label{font-weight:700;font-size:13px}
+.field input,.field textarea,.field select{width:100%;border:1px solid #d6e1f5;border-radius:11px;padding:12px;background:#fbfdff;color:#13254b}
+.field textarea{min-height:100px}
+.secondary{border:1px solid #d6e1f5;border-radius:11px;padding:11px 14px;background:white;color:#13254b}
+.result,.notice{background:#eaf2ff;border-radius:11px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5}
+.hidden{display:none!important}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fffffff0;border-top:1px solid #dce6f7;display:flex;justify-content:center}
+.nav{display:flex;justify-content:space-around;width:min(100%,720px);padding:7px 3px}
+.nav button{border:0;background:transparent;color:#687895;font-size:11px;padding:6px}
+.nav button.active{color:#1459e8;font-weight:800}
+.back{border:0;background:transparent;color:#1459e8;padding:0 0 12px}
+.tag{color:#167344;font-size:12px}
+.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);background:#12234b;color:white;padding:12px;border-radius:12px;display:none;max-width:90%}
 @media(min-width:700px){.cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
-</style></head>
+</style>
+</head>
+
 <body>
-<header class="top"><div class="brand">✓ YECHIM <span style="font-size:12px;font-weight:400">— Muammodan yechimga</span></div><h1>Assalomu alaykum,<br><span id="greetName">mehmon</span> 👋</h1><p>Bugun ham yechim sari bir qadam yaqinroqsiz.</p><form class="search" id="searchForm"><input id="searchInput" placeholder="Muammo yoki savol yozing..."><button>➜</button></form></header>
+
+<header class="top">
+<div class="brand">✓ YECHIM <span style="font-size:12px;font-weight:400">— Muammodan yechimga</span></div>
+<h1>Assalomu alaykum,<br><span id="greetName">mehmon</span> 👋</h1>
+<p>Bugun ham yechim sari bir qadam yaqinroqsiz.</p>
+<form class="search" id="searchForm">
+<input id="searchInput" placeholder="Muammo yoki savol yozing...">
+<button>➜</button>
+</form>
+</header>
+
 <main class="wrap">
-<section class="view active" id="home"><h2>Nimada yordam kerak?</h2><div class="cards">
+
+<section class="view active" id="home">
+<h2>Nimada yordam kerak?</h2>
+<div class="cards">
 <button class="card" onclick="showView('mahallam')">🏘️<b>Mahallam</b><span class="muted">Hududdagi muammolar</span></button>
 <button class="card" onclick="showView('huquqim')">⚖️<b>Huquqim</b><span class="muted">Huquqlar va murojaatlar</span></button>
 <button class="card" onclick="showView('imkoniyatlar')">🎓<b>Imkoniyatlar</b><span class="muted">Grant, kurs va ish</span></button>
-<button class="card" onclick="showView('ai')">🤖<b>AI yordamchi</b><span class="muted">Savolga yo‘l-yo‘riq</span></button></div>
-<div class="panel"><h3>Katta muammolar — aniq qadamlar</h3><p class="muted">Muammoni tushuntiring. Yechim yo‘lini birga topamiz.</p><button class="primary" onclick="showView('report')">＋ Muammo bildirish</button></div><p class="muted">Sinov prototipi: murojaatlar davlat tashkilotlariga avtomatik yuborilmaydi.</p></section>
-<section class="view" id="mahallam"><button class="back" onclick="showView('home')">← Bosh sahifa</button><div class="panel"><h2>🏘️ Mahallam</h2><p>Ko‘cha chirog‘i, chiqindi, yo‘l yoki suv ta’minoti muammosini yozib qoldiring.</p><button class="primary" onclick="showView('report')">Muammo kiritish</button></div></section>
-<section class="view" id="report"><button class="back" onclick="showView('home')">← Bosh sahifa</button><h2>＋ Muammo bildirish</h2><div class="panel"><div id="reportAuthNotice" class="notice">Murojaat yuborish uchun hisobga kiring. Saytni ko‘rish uchun hisob shart emas.</div><form id="reportForm"><div class="field"><label for="category">Muammo turi</label><select id="category"><option>Mahalla va infratuzilma</option><option>Ta’lim</option><option>Ish va bandlik</option><option>Davlat xizmati</option><option>Boshqa</option></select></div><div class="field"><label for="area">Hudud (ixtiyoriy)</label><input id="area" placeholder="Viloyat, tuman yoki mahalla"></div><div class="field"><label for="issue">Muammo tavsifi</label><textarea id="issue" required placeholder="Nima bo‘ldi? Qayerda? Qachondan beri?"></textarea></div><button class="primary" id="reportSubmit">Murojaatni saqlash</button></form><div id="reportResult" class="result hidden"></div></div><h3>Mening murojaatlarim</h3><div id="myReports" class="muted">Yuklanmoqda...</div></section>
-<section class="view" id="huquqim"><button class="back" onclick="showView('home')">← Bosh sahifa</button><div class="panel"><h2>⚖️ Huquqim</h2><p>Hujjat va yozishmalarni saqlang, tegishli tashkilotning rasmiy kanalini toping va amaldagi qoidalarni tekshiring.</p></div></section>
-<section class="view" id="imkoniyatlar"><button class="back" onclick="showView('home')">← Bosh sahifa</button><div class="panel"><h2>🎓 Imkoniyatlar</h2><p>Grant, bepul kurs yoki ish izlayotganda rasmiy sahifa, talablar va muddatlarni tekshiring. Tekshirilmagan vositachilarga pul yubormang.</p></div></section>
-<section class="view" id="ai"><button class="back" onclick="showView('home')">← Bosh sahifa</button><div class="panel"><h2>🤖 AI yordamchi</h2><p class="muted">Bu demo yordamchi, haqiqiy AI xizmatiga ulanmagan.</p><form id="aiForm"><div class="field"><label for="question">Savolingiz</label><textarea id="question" required placeholder="Savolingizni yozing..."></textarea></div><button class="primary">Tavsiya olish</button></form><div id="aiResult" class="result hidden"></div></div></section>
-<section class="view" id="profile"><button class="back" onclick="showView('home')">← Bosh sahifa</button><h2>👤 Profil va hisob</h2><div class="panel"><div id="authStatus" class="notice">Hisob holati tekshirilmoqda...</div><div id="authForms"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="sizning@email.com"></div><div class="field"><label for="password">Parol (kamida 6 belgi)</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Parolingiz"></div><button class="primary" id="signInBtn" type="button">Kirish</button> <button class="secondary" id="signUpBtn" type="button">Ro‘yxatdan o‘tish</button><p class="muted">Email tasdiqlash yoqilgan bo‘lsa, kelgan tasdiqlash xatini oching.</p></div><div id="signedInActions" class="hidden"><p id="signedEmail"></p><button class="secondary" id="signOutBtn" type="button">Chiqish</button></div><div id="authMessage" class="result hidden"></div></div></section>
+<button class="card" onclick="showView('ai')">🤖<b>AI yordamchi</b><span class="muted">Savolga yo‘l-yo‘riq</span></button>
+</div>
+
+<div class="panel">
+<h3>Katta muammolar — aniq qadamlar</h3>
+<p class="muted">Muammoni tushuntiring. Yechim yo‘lini birga topamiz.</p>
+<button class="primary" onclick="showView('report')">＋ Muammo bildirish</button>
+</div>
+<p class="muted">Sinov prototipi: murojaatlar davlat tashkilotlariga avtomatik yuborilmaydi.</p>
+</section>
+
+<section class="view" id="mahallam">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<div class="panel">
+<h2>🏘️ Mahallam</h2>
+<p>Ko‘cha chirog‘i, chiqindi, yo‘l yoki suv ta’minoti muammosini yozib qoldiring.</p>
+<button class="primary" onclick="showView('report')">Muammo kiritish</button>
+</div>
+</section>
+
+<section class="view" id="report">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<h2>＋ Muammo bildirish</h2>
+<div class="panel">
+<div id="reportAuthNotice" class="notice">Murojaat yuborish uchun hisobga kiring.</div>
+
+<form id="reportForm">
+<div class="field">
+<label for="category">Muammo turi</label>
+<select id="category">
+<option>Mahalla va infratuzilma</option>
+<option>Ta’lim</option>
+<option>Ish va bandlik</option>
+<option>Davlat xizmati</option>
+<option>Boshqa</option>
+</select>
+</div>
+
+<div class="field">
+<label for="area">Hudud (ixtiyoriy)</label>
+<input id="area" placeholder="Viloyat, tuman yoki mahalla">
+</div>
+
+<div class="field">
+<label for="issue">Muammo tavsifi</label>
+<textarea id="issue" required placeholder="Nima bo‘ldi? Qayerda? Qachondan beri?"></textarea>
+</div>
+
+<button class="primary" id="reportSubmit">Murojaatni saqlash</button>
+</form>
+<div id="reportResult" class="result hidden"></div>
+</div>
+
+<h3>Mening murojaatlarim</h3>
+<div id="myReports" class="muted">Yuklanmoqda...</div>
+</section>
+
+<section class="view" id="huquqim">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<div class="panel">
+<h2>⚖️ Huquqim</h2>
+<p>Hujjat va yozishmalarni saqlang, tegishli tashkilotning rasmiy kanalini toping va amaldagi qoidalarni tekshiring.</p>
+</div>
+</section>
+
+<section class="view" id="imkoniyatlar">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<div class="panel">
+<h2>🎓 Imkoniyatlar</h2>
+<p>Grant, bepul kurs yoki ish izlayotganda rasmiy sahifa, talablar va muddatlarni tekshiring. Tekshirilmagan vositachilarga pul yubormang.</p>
+</div>
+</section>
+
+<section class="view" id="ai">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<div class="panel">
+<h2>🤖 AI yordamchi</h2>
+<p class="muted">Bu demo yordamchi, haqiqiy AI xizmatiga ulanmagan.</p>
+<form id="aiForm">
+<div class="field">
+<label for="question">Savolingiz</label>
+<textarea id="question" required placeholder="Savolingizni yozing..."></textarea>
+</div>
+<button class="primary">Tavsiya olish</button>
+</form>
+<div id="aiResult" class="result hidden"></div>
+</div>
+</section>
+
+<section class="view" id="profile">
+<button class="back" onclick="showView('home')">← Bosh sahifa</button>
+<h2>👤 Mening profilim</h2>
+
+<div class="panel">
+<div id="authStatus" class="notice">Hisob holati tekshirilmoqda...</div>
+
+<div id="authForms">
+<h3>Ro‘yxatdan o‘tish</h3>
+
+<div class="field">
+<label for="firstName">Ism</label>
+<input id="firstName" placeholder="Ismingiz" autocomplete="given-name">
+</div>
+
+<div class="field">
+<label for="lastName">Familiya</label>
+<input id="lastName" placeholder="Familiyangiz" autocomplete="family-name">
+</div>
+
+<div class="field">
+<label for="email">Email</label>
+<input id="email" type="email" autocomplete="email" placeholder="sizning@email.com">
+</div>
+
+<div class="field">
+<label for="password">Parol (kamida 6 belgi)</label>
+<input id="password" type="password" autocomplete="new-password" minlength="6" placeholder="Parolingiz">
+</div>
+
+<button class="primary" id="signUpBtn" type="button">Ro‘yxatdan o‘tish</button>
+
+<hr>
+
+<h3>Hisobga kirish</h3>
+
+<div class="field">
+<label for="loginEmail">Email</label>
+<input id="loginEmail" type="email" autocomplete="email" placeholder="Emailingiz">
+</div>
+
+<div class="field">
+<label for="loginPassword">Parol</label>
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Parolingiz">
+</div>
+
+<button class="primary" id="signInBtn" type="button">Kirish</button>
+
+<p class="muted">Email tasdiqlash talab qilinsa, emailingizga kelgan xatni tasdiqlang.</p>
+</div>
+
+<div id="signedInActions" class="hidden">
+<h3>Shaxsiy ma’lumotlar</h3>
+
+<div class="field">
+<label for="profileFirstName">Ism</label>
+<input id="profileFirstName" autocomplete="given-name">
+</div>
+
+<div class="field">
+<label for="profileLastName">Familiya</label>
+<input id="profileLastName" autocomplete="family-name">
+</div>
+
+<p id="signedEmail" class="muted"></p>
+
+<button class="primary" id="saveProfileBtn" type="button">Ma’lumotlarni saqlash</button>
+<br><br>
+<button class="secondary" id="signOutBtn" type="button">Hisobdan chiqish</button>
+</div>
+
+<div id="authMessage" class="result hidden"></div>
+</div>
+</section>
+
 </main>
-<footer class="bottom"><nav class="nav"><button class="active" data-view="home" onclick="showView('home',this)">⌂ Bosh sahifa</button><button data-view="mahallam" onclick="showView('mahallam',this)">▦ Mahallam</button><button data-view="report" onclick="showView('report',this)">＋ Murojaat</button><button data-view="imkoniyatlar" onclick="showView('imkoniyatlar',this)">☆ Imkoniyat</button><button data-view="profile" onclick="showView('profile',this)">♙ Profil</button></nav></footer><div class="toast" id="toast"></div>
+
+<footer class="bottom">
+<nav class="nav">
+<button class="active" data-view="home" onclick="showView('home')">⌂ Bosh sahifa</button>
+<button data-view="mahallam" onclick="showView('mahallam')">▦ Mahallam</button>
+<button data-view="report" onclick="showView('report')">＋ Murojaat</button>
+<button data-view="imkoniyatlar" onclick="showView('imkoniyatlar')">☆ Imkoniyat</button>
+<button data-view="profile" onclick="showView('profile')">♙ Profil</button>
+</nav>
+</footer>
+
+<div class="toast" id="toast"></div>
+
 <script>
-/* Publishable key brauzerda ishlatilishi mumkin. Secret/service_role keyni hech qachon bu yerga qo‘ymang. */
+// Supabase sozlamalari
 const SUPABASE_URL='https://mnwnadhiscnbhphznais.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_8nQbbvoPqjs_RtXrqxI_Mg_I2DIddjt';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let currentUser=null;const views=[...document.querySelectorAll('.view')];
-function showView(id,btn){views.forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(btn&&btn.dataset.view)btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
-function toast(s){const t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
-function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function authMsg(s,err=false){const el=document.getElementById('authMessage');el.textContent=s;el.classList.remove('hidden');el.style.background=err?'#fff0f0':'#eaf2ff';el.style.color=err?'#9b1c1c':'#13254b'}
-function updateUI(){const yes=!!currentUser;document.getElementById('authForms').classList.toggle('hidden',yes);document.getElementById('signedInActions').classList.toggle('hidden',!yes);document.getElementById('authStatus').textContent=yes?'Tizimga kirdingiz. Murojaatlar hisobingizga bog‘lanadi.':'Mehmon rejimi: saytni ko‘rishingiz mumkin. Murojaat yuborish uchun ro‘yxatdan o‘ting yoki kiring.';document.getElementById('signedEmail').textContent=yes?currentUser.email:'';document.getElementById('greetName').textContent=yes?currentUser.email.split('@')[0]:'mehmon';document.getElementById('reportAuthNotice').textContent=yes?'Tizimga kirdingiz. Murojaatingiz hisobingizga saqlanadi.':'Murojaat yuborish uchun Profil bo‘limida email va parol bilan kiring.';document.getElementById('reportSubmit').disabled=!yes;document.getElementById('reportSubmit').style.opacity=yes?'1':'.55'}
-async function refresh(){const {data,error}=await db.auth.getSession();if(error)console.error(error);currentUser=data?.session?.user||null;updateUI();await loadReports()}
-async function signUp(){const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;if(!email||password.length<6){authMsg('Emailni kiriting va kamida 6 belgili parol tanlang.',true);return}const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});if(error){authMsg(error.message,true);return}if(data.session){currentUser=data.user;updateUI();authMsg('Ro‘yxatdan o‘tish muvaffaqiyatli!');await loadReports()}else authMsg('Ro‘yxatdan o‘tish so‘rovi yuborildi. Emailingizga tasdiqlash xati kelsa, uni oching. Keyin bu sahifaga qaytib kiring.')}
-async function signIn(){const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;if(!email||!password){authMsg('Email va parolni kiriting.',true);return}const {data,error}=await db.auth.signInWithPassword({email,password});if(error){authMsg(error.message,true);return}currentUser=data.user;updateUI();authMsg('Tizimga muvaffaqiyatli kirdingiz.');await loadReports()}
-async function signOut(){const {error}=await db.auth.signOut();if(error){authMsg(error.message,true);return}currentUser=null;updateUI();await loadReports();authMsg('Hisobdan chiqdingiz.')}
-document.getElementById('signUpBtn').onclick=signUp;document.getElementById('signInBtn').onclick=signIn;document.getElementById('signOutBtn').onclick=signOut;
-db.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;updateUI();setTimeout(loadReports,0)});
-async function loadReports(){const box=document.getElementById('myReports');if(!currentUser){box.innerHTML='<div class="panel muted">Murojaatlaringizni ko‘rish uchun Profil bo‘limida tizimga kiring.</div>';return}box.textContent='Murojaatlar yuklanmoqda...';const {data,error}=await db.from('reports').select('id,category,area,description,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false});if(error){box.innerHTML='<div class="panel muted">Murojaatlarni yuklab bo‘lmadi. Jadval ustunlari va RLS sozlamalarini tekshirish kerak.</div>';console.error(error);return}if(!data?.length){box.innerHTML='<div class="panel muted">Hozircha murojaat yo‘q.</div>';return}box.innerHTML=data.map(x=>`<div class="item"><b>${safe(x.category)}</b><p>${safe(x.description)}</p><p class="muted">${safe(x.area||'Hudud ko‘rsatilmagan')} · ${safe(x.created_at?new Date(x.created_at).toLocaleString('uz-UZ'):'')}</p><span class="tag">Hisobingizda saqlangan</span></div>`).join('')}
-document.getElementById('reportForm').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){showView('profile');authMsg('Murojaat yuborish uchun avval tizimga kiring.',true);return}const description=document.getElementById('issue').value.trim(),category=document.getElementById('category').value,area=document.getElementById('area').value.trim();if(!description){toast('Muammo tavsifini kiriting.');return}const btn=document.getElementById('reportSubmit');btn.disabled=true;btn.textContent='Saqlanmoqda...';const {error}=await db.from('reports').insert({user_id:currentUser.id,category,area:area||null,description});btn.disabled=false;btn.textContent='Murojaatni saqlash';if(error){const r=document.getElementById('reportResult');r.classList.remove('hidden');r.textContent='Murojaat saqlanmadi. Internet, jadval ustunlari va RLS INSERT siyosatini tekshirish kerak.';console.error(error);return}const r=document.getElementById('reportResult');r.classList.remove('hidden');r.textContent='Murojaatingiz Supabase bazasiga saqlandi. U davlat tashkilotiga avtomatik yuborilmadi.';e.target.reset();await loadReports();toast('Murojaat saqlandi!')});
-document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();const q=document.getElementById('searchInput').value.trim();if(!q){toast('Avval savol yozing.');return}document.getElementById('question').value=q;showView('ai')});
-document.getElementById('aiForm').addEventListener('submit',e=>{e.preventDefault();const q=document.getElementById('question').value.toLowerCase();let a='Muammoni aniq yozing, tegishli rasmiy manbani tekshiring va kerakli hujjatlarni saqlang.';if(q.includes('grant')||q.includes('kurs')||q.includes('o‘q'))a='Maqsadni belgilang, rasmiy tashkilot sahifasini tekshiring, talab va muddatlarni yozib oling. Tekshirilmagan vositachiga pul yubormang.';else if(q.includes('ish'))a='Ish beruvchini tekshiring, rezyume tayyorlang va mehnat shartnomasini diqqat bilan o‘qing.';const r=document.getElementById('aiResult');r.classList.remove('hidden');r.textContent=a+' Bu demo javob, haqiqiy AI xizmati emas.'});
-refresh();
-</script></body></html>
 
+const db=window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+let currentUser=null;
+const views=[...document.querySelectorAll('.view')];
+
+function showView(id){
+views.forEach(v=>v.classList.toggle('active',v.id===id));
+document.querySelectorAll('.nav button').forEach(b=>{
+b.classList.toggle('active',b.dataset.view===id);
+});
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toast(s){
+const t=document.getElementById('toast');
+t.textContent=s;
+t.style.display='block';
+setTimeout(()=>t.style.display='none',2800);
+}
+
+function safe(s){
+return String(s??'').replace(/[&<>"']/g,c=>({
+'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+}
+
+function authMsg(s,err=false){
+const el=document.getElementById('authMessage');
+el.textContent=s;
+el.classList.remove('hidden');
+el.style.background=err?'#fff0f0':'#eaf2ff';
+el.style.color=err?'#9b1c1c':'#13254b';
+}
+
+function getFullName(user){
+const meta=user?.user_metadata||{};
+return [meta.first_name,meta.last_name].filter(Boolean).join(' ').trim();
+}
+
+function updateUI(){
+const yes=!!currentUser;
+const fullName=getFullName(currentUser);
+
+document.getElementById('authForms').classList.toggle('hidden',yes);
+document.getElementById('signedInActions').classList.toggle('hidden',!yes);
+
+document.getElementById('authStatus').textContent=yes
+?'Tizimga kirdingiz. Murojaatlar hisobingizga bog‘lanadi.'
+:'Mehmon rejimi: murojaat yuborish uchun ro‘yxatdan o‘ting yoki tizimga kiring.';
+
+document.getElementById('signedEmail').textContent=yes
+?currentUser.email:'';
+
+document.getElementById('greetName').textContent=yes
+?(fullName||'foydalanuvchi'):'mehmon';
+
+document.getElementById('reportAuthNotice').textContent=yes
+?'Tizimga kirdingiz. Murojaatingiz hisobingizga saqlanadi.'
+:'Murojaat yuborish uchun Profil bo‘limida tizimga kiring.';
+
+document.getElementById('reportSubmit').disabled=!yes;
+document.getElementById('reportSubmit').style.opacity=yes?'1':'.55';
+
+if(yes){
+document.getElementById('profileFirstName').value=currentUser.user_metadata?.first_name||'';
+document.getElementById('profileLastName').value=currentUser.user_metadata?.last_name||'';
+}
+}
+
+async function loadReports(){
+const box=document.getElementById('myReports');
+
+if(!currentUser){
+box.innerHTML='<div class="panel muted">Murojaatlaringizni ko‘rish uchun Profil bo‘limida tizimga kiring.</div>';
+return;
+}
+
+box.textContent='Murojaatlar yuklanmoqda...';
+
+const {data,error}=await db
+.from('reports')
+.select('id,category,area,description,created_at')
+.eq('user_id',currentUser.id)
+.order('created_at',{ascending:false});
+
+if(error){
+box.innerHTML='<div class="panel muted">Murojaatlarni yuklab bo‘lmadi. Jadval ustunlari va RLS sozlamalarini tekshiring.</div>';
+console.error(error);
+return;
+}
+
+if(!data?.length){
+box.innerHTML='<div class="panel muted">Hozircha murojaat yo‘q.</div>';
+return;
+}
+
+box.innerHTML=data.map(x=>`
+<div class="item">
+<b>${safe(x.category)}</b>
+<p>${safe(x.description)}</p>
+<p class="muted">
+${safe(x.area||'Hudud ko‘rsatilmagan')} ·
+${safe(x.created_at?new Date(x.created_at).toLocaleString('uz-UZ'):'')}
+</p>
+<span class="tag">Hisobingizda saqlangan</span>
+</div>
+`).join('');
+}
+
+async function refresh(){
+const {data,error}=await db.auth.getSession();
+
+if(error)console.error(error);
+
+currentUser=data?.session?.user||null;
+updateUI();
+await loadReports();
+}
+
+// Ro‘yxatdan o‘tish
+async function signUp(){
+const firstName=document.getElementById('firstName').value.trim();
+const lastName=document.getElementById('lastName').value.trim();
+const email=document.getElementById('email').value.trim();
+const password=document.getElementById('password').value;
+
+if(!firstName||!lastName||!email||password.length<6){
+authMsg('Barcha maydonlarni to‘ldiring. Parol kamida 6 belgidan iborat bo‘lsin.',true);
+return;
+}
+
+const btn=document.getElementById('signUpBtn');
+btn.disabled=true;
+btn.textContent='Ro‘yxatdan o‘tilmoqda...';
+
+const {data,error}=await db.auth.signUp({
+email,
+password,
+options:{
+emailRedirectTo:location.origin,
+data:{
+first_name:firstName,
+last_name:lastName
+}
+}
+});
+
+btn.disabled=false;
+btn.textContent='Ro‘yxatdan o‘tish';
+
+if(error){
+authMsg(error.message,true);
+return;
+}
+
+if(data.session){
+currentUser=data.user;
+updateUI();
+authMsg('Tabriklaymiz! Hisobingiz yaratildi.');
+await loadReports();
+}else{
+authMsg('Ro‘yxatdan o‘tish so‘rovi yuborildi. Emailingizga kelgan tasdiqlash xatini oching. Keyin hisobingizga kiring.');
+}
+}
+
+// Hisobga kirish
+async function signIn(){
+const email=document.getElementById('loginEmail').value.trim();
+const password=document.getElementById('loginPassword').value;
+
+if(!email||!password){
+authMsg('Email va parolni kiriting.',true);
+return;
+}
+
+const btn=document.getElementById('signInBtn');
+btn.disabled=true;
+btn.textContent='Kirilmoqda...';
+
+const {data,error}=await db.auth.signInWithPassword({
+email,
+password
+});
+
+btn.disabled=false;
+btn.textContent='Kirish';
+
+if(error){
+authMsg(error.message,true);
+return;
+}
+
+currentUser=data.user;
+updateUI();
+authMsg('Tizimga muvaffaqiyatli kirdingiz!');
+await loadReports();
+showView('home');
+}
+
+// Profilni yangilash
+async function saveProfile(){
+if(!currentUser)return;
+
+const firstName=document.getElementById('profileFirstName').value.trim();
+const lastName=document.getElementById('profileLastName').value.trim();
+
+if(!firstName||!lastName){
+authMsg('Ism va familiyani kiriting.',true);
+return;
+}
+
+const btn=document.getElementById('saveProfileBtn');
+btn.disabled=true;
+btn.textContent='Saqlanmoqda...';
+
+const {data,error}=await db.auth.updateUser({
+data:{
+first_name:firstName,
+last_name:lastName
+}
+});
+
+btn.disabled=false;
+btn.textContent='Ma’lumotlarni saqlash';
+
+if(error){
+authMsg(error.message,true);
+return;
+}
+
+currentUser=data.user;
+updateUI();
+authMsg('Profil ma’lumotlari muvaffaqiyatli saqlandi!');
+toast('Profil yangilandi!');
+}
+
+// Hisobdan chiqish
+async function signOut(){
+const {error}=await db.auth.signOut();
+
+if(error){
+authMsg(error.message,true);
+return;
+}
+
+currentUser=null;
+updateUI();
+await loadReports();
+authMsg('Hisobdan chiqdingiz.');
+showView('home');
+}
+
+document.getElementById('signUpBtn').onclick=signUp;
+document.getElementById('signInBtn').onclick=signIn;
+document.getElementById('saveProfileBtn').onclick=saveProfile;
+document.getElementById('signOutBtn').onclick=signOut;
+
+// Hisob holati o‘zgarganda
+db.auth.onAuthStateChange((_event,session)=>{
+currentUser=session?.user||null;
+updateUI();
+setTimeout(loadReports,0);
+});
+
+// Murojaat yuborish
+document.getElementById('reportForm').addEventListener('submit',async e=>{
+e.preventDefault();
+
+if(!currentUser){
+showView('profile');
+authMsg('Murojaat yuborish uchun avval tizimga kiring.',true);
+return;
+}
+
+const description=document.getElementById('issue').value.trim();
+const category=document.getElementById('category').value;
+const area=document.getElementById('area').value.trim();
+
+if(!description){
+toast('Muammo tavsifini kiriting.');
+return;
+}
+
+const btn=document.getElementById('reportSubmit');
+btn.disabled=true;
+btn.textContent='Saqlanmoqda...';
+
+const {error}=await db.from('reports').insert({
+user_id:currentUser.id,
+category,
+area:area||null,
+description
+});
+
+btn.disabled=false;
+btn.textContent='Murojaatni saqlash';
+
+const result=document.getElementById('reportResult');
+result.classList.remove('hidden');
+
+if(error){
+result.textContent='Murojaat saqlanmadi. Internet, jadval ustunlari va RLS sozlamalarini tekshiring.';
+console.error(error);
+return;
+}
+
+result.textContent='Murojaatingiz bazaga saqlandi. U davlat tashkilotiga avtomatik yuborilmadi.';
+e.target.reset();
+await loadReports();
+toast('Murojaat saqlandi!');
+});
+
+// Qidiruv
+document.getElementById('searchForm').addEventListener('submit',e=>{
+e.preventDefault();
+
+const q=document.getElementById('searchInput').value.trim();
+
+if(!q){
+toast('Avval savol yozing.');
+return;
+}
+
+document.getElementById('question').value=q;
+showView('ai');
+});
+
+// Demo AI
+document.getElementById('aiForm').addEventListener('submit',e=>{
+e.preventDefault();
+
+const q=document.getElementById('question').value.toLowerCase();
+
+let answer='Muammoni aniq yozing, tegishli rasmiy manbani tekshiring va kerakli hujjatlarni saqlang.';
+
+if(q.includes('grant')||q.includes('kurs')||q.includes('o‘q')){
+answer='Maqsadni belgilang, rasmiy tashkilot sahifasini tekshiring, talab va muddatlarni yozib oling. Tekshirilmagan vositachiga pul yubormang.';
+}else if(q.includes('ish')){
+answer='Ish beruvchini tekshiring, rezyume tayyorlang va mehnat shartnomasini diqqat bilan o‘qing.';
+}
+
+const result=document.getElementById('aiResult');
+result.classList.remove('hidden');
+result.textContent=answer+' Bu demo javob, haqiqiy AI xizmatiga ulanmagan.';
+});
+
+refresh();
+</script>
+
+</body>
+</html>
